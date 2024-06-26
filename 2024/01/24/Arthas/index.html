@@ -384,7 +384,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-01-24
+                    2024-06-26
                 </div>
                 
 
@@ -433,7 +433,60 @@ Found existing <span class="token function">java</span> process, please choose o
 <ul>
 <li><input disabled="" type="checkbox"> 相关文章：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/612238709?utm_id=0">云音乐服务端应用启动时间下降40%实践分享</a></li>
 </ul>
-<h2 id="todo-待补充👇"><a href="#todo-待补充👇" class="headerlink" title="todo: 待补充👇"></a>todo: 待补充👇</h2><h2 id="Watch"><a href="#Watch" class="headerlink" title="Watch"></a>Watch</h2><h2 id="Trace"><a href="#Trace" class="headerlink" title="Trace"></a>Trace</h2><h2 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h2><h2 id="Monitor"><a href="#Monitor" class="headerlink" title="Monitor"></a>Monitor</h2><h2 id="TimeTunnel-Tt"><a href="#TimeTunnel-Tt" class="headerlink" title="TimeTunnel (Tt)"></a>TimeTunnel (Tt)</h2>
+<h2 id="三、Arthas常用命令"><a href="#三、Arthas常用命令" class="headerlink" title="三、Arthas常用命令"></a>三、Arthas常用命令</h2><h3 id="1-trace"><a href="#1-trace" class="headerlink" title="1.trace"></a>1.trace</h3><p>查看方法调用链路以及方法各部分的耗时（配合arthas插件使用）</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># java.* 下的函数调用默认会忽略掉。通过增加--skipJDKMethod false参数可以打印出来</span>
+<span class="token comment"># -n 参数指定捕捉结果的次数</span>
+trace com.asiainfo.pay.check.analyzer.service.impl.CsvTxtAnalyzerServiceImpl columnMap  <span class="token parameter variable">-n</span> <span class="token number">5</span> <span class="token parameter variable">--skipJDKMethod</span> <span class="token boolean">false</span> 
+
+<span class="token comment"># -E trace 多个类或者多个函数 '1==1' 表示全部 method1|method2|method3</span>
+trace <span class="token parameter variable">-E</span> com.asiainfo.pay.check.analyzer.service.impl.CsvTxtAnalyzerServiceImpl columnMap <span class="token parameter variable">-n</span> <span class="token number">5</span>  <span class="token parameter variable">--skipJDKMethod</span> <span class="token boolean">false</span> <span class="token string">'1==1'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-jad"><a href="#2-jad" class="headerlink" title="2.jad"></a>2.jad</h3><p>反编译类&#x2F;方法</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># jad + 类全路径</span>
+jad com.tracer.service.impl.CheckServiceImpl 
+
+<span class="token comment"># jad + 类全路径 + 空格 + 方法名</span>
+jad com.tracer.service.impl.CheckServiceImpl checkFileFun<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-retransform"><a href="#3-retransform" class="headerlink" title="3.retransform"></a>3.retransform</h3><p>加载外部的.class文件到jvm内</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 查看以及加载的类（显示Id）</span>
+retransform <span class="token parameter variable">-l</span>
+
+<span class="token comment"># 删除指定加载的类</span>
+retransform <span class="token parameter variable">-d</span> <span class="token operator">&lt;</span>Id<span class="token operator">></span>
+
+<span class="token comment"># 加载类到JVM（本地编译好后将class文件复制到主机上）</span>
+retransform /app/check/arthas-packaging-3.7.1-bin/CheckServiceImpl.class<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><input disabled="" type="checkbox"> 注意 加载类到JVM，不允许新增加字段和方法。</li>
+</ul>
+<h2 id="4-vmoption"><a href="#4-vmoption" class="headerlink" title="4.vmoption"></a>4.vmoption</h2><p>查看，更新 VM 诊断相关的参数</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>arthas@56963<span class="token punctuation">]</span>$ vmoption
+ KEY                    VALUE                   ORIGIN                 WRITEABLE
+---------------------------------------------------------------------------------------------
+ HeapDumpBeforeFullGC   <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>JVM准备Full GC之前，生成堆快照<span class="token punctuation">]</span>
+ HeapDumpAfterFullGC    <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>JVMFull GC之后，生成堆快照<span class="token punctuation">]</span>
+ HeapDumpOnOutOfMemory  <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>当JVM遇到内存溢出错误时，是否自动创建堆内存转储<span class="token punctuation">]</span>
+ Error
+ HeapDumpPath                                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>堆快照文件保存路径<span class="token punctuation">]</span>
+ CMSAbortablePrecleanW  <span class="token number">100</span>                     DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>在并发标记清除（CMS）收集器中，可中断预清理阶段等待用户线程完成的最长时<span class="token punctuation">]</span>
+ aitMillis
+ CMSWaitDuration        <span class="token number">2000</span>                    DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>CMS收集器在执行某些操作前等待其他线程完成的最长时间（毫秒）<span class="token punctuation">]</span>
+ CMSTriggerInterval     <span class="token parameter variable">-1</span>                      DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>触发CMS垃圾回收的间隔时间（-1表示使用默认值，由JVM自行决定）<span class="token punctuation">]</span>
+ PrintGC                <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>控制是否打印GC事件的基本信息<span class="token punctuation">]</span>
+ PrintGCDetails         <span class="token boolean">true</span>                    MANAGEMENT             <span class="token boolean">true</span> <span class="token punctuation">[</span>打印GC的详细信息，包括各代的内存变化等<span class="token punctuation">]</span>
+ PrintGCDateStamps      <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>在GC日志中包含日期时间戳<span class="token punctuation">]</span>
+ PrintGCTimeStamps      <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>包含GC发生的时间戳（以毫秒为单位自JVM启动）<span class="token punctuation">]</span>
+ PrintGCID              <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>是否在日志中包含GC事件的唯一标识符<span class="token punctuation">]</span>
+ PrintClassHistogramBe  <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>在GC前或特定时刻是否打印类的直方图（即内存占用情况）<span class="token punctuation">]</span>
+ foreFullGC
+ PrintClassHistogramAf  <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>在GC后或特定时刻是否打印类的直方图（即内存占用情况）<span class="token punctuation">]</span>
+ terFullGC
+ PrintClassHistogram    <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>在特定时刻是否打印类的直方图（即内存占用情况）<span class="token punctuation">]</span>
+ MinHeapFreeRatio       <span class="token number">0</span>                       DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>控制堆内存的最小空闲比例<span class="token punctuation">]</span>
+ MaxHeapFreeRatio       <span class="token number">100</span>                     DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>控制堆内存的最大空闲比例<span class="token punctuation">]</span>
+ PrintConcurrentLocks   <span class="token boolean">false</span>                   DEFAULT                <span class="token boolean">true</span> <span class="token punctuation">[</span>在进行垃圾回收时，是否打印持有锁的线程信息，帮助诊断死锁问题<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
                 
             </div>
             <hr/>
@@ -881,18 +934,18 @@ Found existing <span class="token function">java</span> process, please choose o
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2024/01/24/Spring/">
+                <a href="/2024/01/24/hello-world/">
                     <div class="card-image">
                         
-                        <img src="/markdownimages/background/view/1.jpg" class="responsive-img" alt="Spring">
+                        <img src="/markdownimages/background/vive/1.jpg" class="responsive-img" alt="Hello World">
                         
-                        <span class="card-title">Spring</span>
+                        <span class="card-title">Hello World</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            Spring 源码
+                            Hello World
                         
                     </div>
                     <div class="publish-info">
@@ -903,8 +956,8 @@ Found existing <span class="token function">java</span> process, please choose o
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Java-%E6%A1%86%E6%9E%B6/" class="post-category">
-                                    Java 框架
+                            <a href="/categories/%E5%85%B6%E4%BB%96/" class="post-category">
+                                    其他
                                 </a>
                             
                             
@@ -914,8 +967,8 @@ Found existing <span class="token function">java</span> process, please choose o
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Spring-Framework/">
-                        <span class="chip bg-color">Spring Framework</span>
+                    <a href="/tags/%E5%85%B6%E4%BB%96/">
+                        <span class="chip bg-color">其他</span>
                     </a>
                     
                 </div>
