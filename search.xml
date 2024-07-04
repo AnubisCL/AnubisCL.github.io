@@ -574,6 +574,31 @@
     
     
     <entry>
+      <title>零拷贝</title>
+      <link href="/2024/01/24/%E9%9B%B6%E6%8B%B7%E8%B4%9D/"/>
+      <url>/2024/01/24/%E9%9B%B6%E6%8B%B7%E8%B4%9D/</url>
+      
+        <content type="html"><![CDATA[<h1 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a>零拷贝</h1><p>零拷贝字面上的意思包括两个，“零”和“拷贝”：</p><ul><li>“拷贝”：就是指数据从一个存储区域转移到另一个存储区域。</li><li>“零” ：表示次数为0，它表示拷贝数据的次数为0。</li><li>常见的零拷贝方式有mmap，sendfile，dma，directI&#x2F;O等。</li></ul><h2 id="（一）前置知识"><a href="#（一）前置知识" class="headerlink" title="（一）前置知识"></a>（一）前置知识</h2><h3 id="1-内核态和用户态"><a href="#1-内核态和用户态" class="headerlink" title="1.内核态和用户态"></a>1.内核态和用户态</h3><p>用户态（User Mode）和内核态（Kernel Mode），也分别称为用户空间和内核空间，是现代操作系统中CPU执行的两种不同权限级别，它们在操作系统中扮演着至关重要的角色，确保系统的稳定性和安全性。</p><h4 id="1-1用户态（User-Mode）："><a href="#1-1用户态（User-Mode）：" class="headerlink" title="1.1用户态（User Mode）："></a>1.1用户态（User Mode）：</h4><p>这是应用程序运行的正常状态。大多数程序，如文本编辑器、浏览器等，都在用户态下执行。<br>在用户态下，程序可以访问自己的内存区域（用户空间），但不能直接访问系统核心资源，如硬件设备、系统内存、其他进程的地址空间等。用户态限制了程序的行为，防止错误或恶意代码破坏系统。</p><h4 id="1-2内核态（Kernel-Mode）："><a href="#1-2内核态（Kernel-Mode）：" class="headerlink" title="1.2内核态（Kernel Mode）："></a>1.2内核态（Kernel Mode）：</h4><p>当需要执行特权操作时，如硬件访问、修改内存映射、处理中断等，CPU会从用户态切换到内核态。<br>在内核态下，程序可以执行任何机器指令，访问所有内存和硬件资源，因为此时操作系统内核具有完全的控制权。<br>内核态是操作系统内核执行任务的状态，包括系统调用的处理、驱动程序的执行等。</p><h4 id="1-3关联与转换："><a href="#1-3关联与转换：" class="headerlink" title="1.3关联与转换："></a>1.3关联与转换：</h4><ul><li>系统调用：应用程序通过调用操作系统提供的API（应用编程接口）来请求服务，如文件读写、网络通信等，这会导致从用户态切换到内核态。</li><li>异常：当程序执行遇到错误或特殊情况（如除零错误、页面错误）时，CPU会自动切换到内核态来处理这些异常。</li><li>外围设备中断：硬件设备完成操作或需要服务时，会通过中断信号通知CPU，CPU响应中断时也会进入内核态处理中断事件。</li></ul><h4 id="1-4-总结"><a href="#1-4-总结" class="headerlink" title="1.4.总结"></a>1.4.总结</h4><p>用户态和内核态是操作系统隔离应用程序与系统核心功能的一种机制，确保了系统的稳定运行和安全性。两者之间的转换由硬件支持，并由操作系统精心管理，以在性能和安全之间取得平衡。</p><ul><li>例如：Java程序中的主线程还是JVM（Java虚拟机）管理的守护线程（如垃圾回收线程），它们在执行常规的程序逻辑时，都运行在用户态（User Mode）。这意味着包括读取文件这样的操作在内的大部分任务，都是在用户态下发起请求，然后通过系统调用委托给操作系统内核完成实际的低级操作。但是当堆内存不足且JVM尝试扩展堆空间时，可能需要向操作系统请求更多的内存，这时就需要通过系统调用进入内核态来完成内存分配。此外，如果GC过程中涉及到的内存页当前不在物理内存中（即发生了页面错误），那么处理这一情况也可能需要内核介入，从而导致用户态到内核态的切换。</li></ul><h2 id="（二）I-O流程"><a href="#（二）I-O流程" class="headerlink" title="（二）I&#x2F;O流程"></a>（二）I&#x2F;O流程</h2><p><img src="/markdownimages/zeroCopy/io.jpg" alt="操作系统 I/O">  </p><h3 id="1-Buffer-I-O"><a href="#1-Buffer-I-O" class="headerlink" title="1.Buffer I&#x2F;O"></a>1.Buffer I&#x2F;O</h3><p>Buffer I&#x2F;O为了提高读写效率和保护磁盘，使用了页缓存机制(page cache)，不过由于页缓存处于内核空间，不能被应用程序（用户进程）直接寻址，所以还需要将页缓存数据再拷贝到内存对应的用户空间中。</p><h4 id="1-1-DMA"><a href="#1-1-DMA" class="headerlink" title="1.1 DMA"></a>1.1 DMA</h4><p>DMA（Direct Memory Access）直接内存访问，解决传统I&#x2F;O需要CPU参与的问题。</p><h4 id="1-2-mmap-write"><a href="#1-2-mmap-write" class="headerlink" title="1.2 mmap + write"></a>1.2 mmap + write</h4><p>mmap（memory map）内存映射，将内核态的页缓存（page cache）与用户态内存映射到一起，减少了一次内存拷贝。</p><h4 id="1-3-sendfile"><a href="#1-3-sendfile" class="headerlink" title="1.3 sendfile"></a>1.3 sendfile</h4><p>只传输静态文件，用户态不做干预，减少了一次数据拷贝，上下文切换少了两次。例如：访问web服务器的静态资源。</p><h4 id="1-4-sendfile-DMA-Scatter-Gather"><a href="#1-4-sendfile-DMA-Scatter-Gather" class="headerlink" title="1.4 sendfile + DMA Scatter&#x2F;Gather"></a>1.4 sendfile + DMA Scatter&#x2F;Gather</h4><p>优化了网络访问中，访问静态文件，静态文件在内核态的页缓存（page cache）与socket缓存（socket cache）之间的copy，由DMA将数据从读缓冲区拷贝到网卡。</p><h3 id="2-Direct-I-O"><a href="#2-Direct-I-O" class="headerlink" title="2. Direct I&#x2F;O"></a>2. Direct I&#x2F;O</h3><p>Direct I&#x2F;O也叫直接I&#x2F;O，本质上就是跳过页缓存(bypass page cache)，直接将用户态buffer写入存储系统中（通过DMA），操作系统不会再做刷盘处理。</p><ul><li>例如：Mysql就是使用Direct I&#x2F;O，同时自己实现了一套缓存系统。</li><li><a href="https://github.com/smacke/jaydio">Jaydio是一个实现了对Direct I&#x2F;O支持的Java I&#x2F;O库</a></li></ul><h2 id="（三）参考"><a href="#（三）参考" class="headerlink" title="（三）参考"></a>（三）参考</h2><ul><li><a href="https://www.yuque.com/hollis666/ydpq6c/edxez2ggicn8thzq">Java 8 Guwen K</a></li><li><a href="https://cloud.tencent.com/developer/article/2301097">buffer io和direct io</a></li><li><a href="https://www.zhihu.com/question/490036559/answer/2149345354">知乎：请问下发起write系统调用，是等待数据写完，线程再继续运行吗，还是直接返回，由操作系统写入就行了？</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 零拷贝 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 操作系统 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Docker</title>
       <link href="/2024/01/24/Docker/"/>
       <url>/2024/01/24/Docker/</url>
