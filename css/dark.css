@@ -26,6 +26,7 @@ body.DarkMode .fa-lightbulb:before,
 body.DarkMode .fa-moon-o:before,
 body.DarkMode .fab,
 body.DarkMode .fas,
+body.DarkMode header .nav a,
 body.DarkMode .friends-container .tag-title,
 body.DarkMode .frind-ship .title h1,
 body.DarkMode .moments-item-info .moments-item-time,
@@ -56,8 +57,6 @@ body.DarkMode h4,
 body.DarkMode h5,
 body.DarkMode h6,
 body.DarkMode header .side-nav .menu-list a,
-body.DarkMode header .side-nav .mobile-head .logo-desc,
-body.DarkMode header .side-nav .mobile-head .logo-name,
 body.DarkMode li,
 body.DarkMode td,
 body.DarkMode p,
@@ -77,6 +76,17 @@ body.DarkMode blockquote {
     border-left: 5px solid #42b983 !important;
     color: rgba(255, 255, 255, 0.6);
 }
+/* 暗色模式下 头像颜色反转 */
+body.DarkMode header .side-nav .mobile-head img {
+    filter: invert(100%) !important;
+}
+/* 暗色模式下 字体颜色 */
+body.DarkMode header .nav-item-span,
+body.DarkMode header .brand-logo .logo-span,
+body.DarkMode header .side-nav .mobile-head .logo-desc,
+body.DarkMode header .side-nav .mobile-head .logo-name {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
 body.DarkMode .nav-menu li .sub-nav li a {
     color: rgba(255, 255, 255, 0.6) !important;
 }
@@ -87,12 +97,12 @@ body.DarkMode th td li {
 body.DarkMode .prev-next .article-badge {
     background-color: rgba(255, 255, 255, 0.6);
 }
+/* 暗色模式下 字体颜色 */
 body.DarkMode header .side-nav .menu-list a {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(0, 0, 0, 0.6) !important;
 }
-
 body.DarkMode .mobile-menu-list a i {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(0, 0, 0, 0.6) !important;
 }
 body.DarkMode .bg-color {
     background-image:linear-gradient(to right, #3b3b3b 0, rgb(59 59 59) 100%);
@@ -230,10 +240,10 @@ body.DarkMode #posts-chart,
 body.DarkMode #tags-chart {
     filter: invert(1);
 }
-body.DarkMode #calendar_container, 
-body.DarkMode #uv_container, 
-body.DarkMode #pv_container, 
-body.DarkMode #sources_container, 
+body.DarkMode #calendar_container,
+body.DarkMode #uv_container,
+body.DarkMode #pv_container,
+body.DarkMode #sources_container,
 body.DarkMode #map_container {
     filter: invert(1);
 }
@@ -241,36 +251,36 @@ body.DarkMode header .brand-logo .logo-img {
     display: none;
 }
 
-.DarkMode #readmode, 
-.DarkMode #backTop, 
+.DarkMode #readmode,
+.DarkMode #backTop,
 .DarkMode #button-body,
 .DarkMode .comment-scroll,
-.DarkMode .recommend .post-card, 
+.DarkMode .recommend .post-card,
 .DarkMode .post-card,
 .DarkMode .read-more,
-.DarkMode #floating-toc-btn .btn-floating, 
-.DarkMode #vcomments .vtag, 
-.DarkMode #waline .v, 
+.DarkMode #floating-toc-btn .btn-floating,
+.DarkMode #vcomments .vtag,
+.DarkMode #waline .v,
 .DarkMode #cd-timeline,
-.DarkMode .V-badge, 
-.DarkMode .V-title-top, 
-.DarkMode .about-cover, 
-.DarkMode .article-cover .V-title, 
-.DarkMode .card .mainV, 
-.DarkMode .card-content iframe, 
-.DarkMode .card-image:after, 
-.DarkMode .card-image:before, 
-.DarkMode .cat-container, 
-.DarkMode .comment-switch, 
-.DarkMode .new-item-badge, 
-.DarkMode .note, 
-.DarkMode .our-team .pic, 
-.DarkMode .our-team .social, 
-.DarkMode .our-team h3, 
-.DarkMode .tag-chips span, 
-.DarkMode .timeline-box .contentC, 
-.DarkMode .wrapper, .DarkMode hr, 
-.DarkMode img, 
+.DarkMode .V-badge,
+.DarkMode .V-title-top,
+.DarkMode .about-cover,
+.DarkMode .article-cover .V-title,
+.DarkMode .card .mainV,
+.DarkMode .card-content iframe,
+.DarkMode .card-image:after,
+.DarkMode .card-image:before,
+.DarkMode .cat-container,
+.DarkMode .comment-switch,
+.DarkMode .new-item-badge,
+.DarkMode .note,
+.DarkMode .our-team .pic,
+.DarkMode .our-team .social,
+.DarkMode .our-team h3,
+.DarkMode .tag-chips span,
+.DarkMode .timeline-box .contentC,
+.DarkMode .wrapper, .DarkMode hr,
+.DarkMode img,
 .DarkMode li:before {
     -webkit-filter: brightness(0.8) !important;
     filter: brightness(0.8) !important;
