@@ -323,7 +323,7 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/markdownimages/background/view/1.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/markdownimages/background/animation/16.png')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
@@ -384,7 +384,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-01-24
+                    2024-07-10
                 </div>
                 
 
@@ -406,8 +406,75 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Frp"><a href="#Frp" class="headerlink" title="Frp"></a>Frp</h1><h2 id="1-下载Frp"><a href="#1-下载Frp" class="headerlink" title="1.下载Frp"></a>1.下载Frp</h2><h3 id="Github-仓库下载地址："><a href="#Github-仓库下载地址：" class="headerlink" title="Github 仓库下载地址："></a>Github 仓库下载地址：</h3><p><a target="_blank" rel="noopener" href="https://github.com/fatedier/frp/releases">https://github.com/fatedier/frp/releases</a></p>
-<h2 id="2-服务端Frp配置"><a href="#2-服务端Frp配置" class="headerlink" title="2.服务端Frp配置"></a>2.服务端Frp配置</h2><h2 id="3-客户端Frp配置"><a href="#3-客户端Frp配置" class="headerlink" title="3.客户端Frp配置"></a>3.客户端Frp配置</h2><h2 id="4-自启动"><a href="#4-自启动" class="headerlink" title="4.自启动"></a>4.自启动</h2>
+                <h1 id="Frp"><a href="#Frp" class="headerlink" title="Frp"></a>Frp</h1><p>Frp，全称为 Fast Reverse Proxy，是一款高性能的反向代理应用，支持 TCP、UDP 协议，主要用于内网穿透。Frp 的主要功能是帮助用户在有 NAT 或防火墙的环境中建立一个稳定的、低延迟的网络连接。它常被用于远程访问局域网内的服务，如访问家庭网络中的 NAS、游戏服务器、网站服务器等。</p>
+<h3 id="代理类型"><a href="#代理类型" class="headerlink" title="代理类型:"></a>代理类型:</h3><p>frp 支持多种代理类型，以适应不同的使用场景。以下是一些常见的代理类型：</p>
+<ul>
+<li>TCP：提供纯粹的 TCP 端口映射，使服务端能够根据不同的端口将请求路由到不同的内网服务。</li>
+<li>UDP：提供纯粹的 UDP 端口映射，与 TCP 代理类似，但用于 UDP 流量。</li>
+<li>HTTP：专为 HTTP 应用设计，支持修改 Host Header 和增加鉴权等额外功能。</li>
+<li>HTTPS：类似于 HTTP 代理，但专门用于处理 HTTPS 流量。</li>
+<li>STCP：提供安全的 TCP 内网代理，要求在被访问者和访问者的机器上都部署 frpc，不需要在服务端暴露端口。</li>
+<li>SUDP：提供安全的 UDP 内网代理，与 STCP 类似，需要在被访问者和访问者的机器上都部署 frpc，不需要在服务端暴露端口。</li>
+<li>XTCP：点对点内网穿透代理，与 STCP 类似，但流量不需要经过服务器中转。</li>
+<li>TCPMUX：支持服务端 TCP 端口的多路复用，允许通过同一端口访问不同的内网服务。</li>
+</ul>
+<h2 id="1-下载Frp"><a href="#1-下载Frp" class="headerlink" title="1.下载Frp"></a>1.下载Frp</h2><h3 id="Github-仓库下载地址："><a href="#Github-仓库下载地址：" class="headerlink" title="Github 仓库下载地址："></a>Github 仓库下载地址：</h3><p><a target="_blank" rel="noopener" href="https://github.com/fatedier/frp/releases">https://github.com/fatedier/frp/releases</a></p>
+<h3 id="中文文档："><a href="#中文文档：" class="headerlink" title="中文文档："></a>中文文档：</h3><p><a target="_blank" rel="noopener" href="https://gofrp.org/zh-cn/docs/">https://gofrp.org/zh-cn/docs/</a></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 使用 yum 安装 systemd（CentOS/RHEL）</span>
+yum <span class="token function">install</span> systemd
+
+<span class="token comment"># 使用 apt 安装 systemd（Debian/Ubuntu）</span>
+<span class="token function">apt</span> <span class="token function">install</span> systemd
+
+<span class="token comment"># 创建 frps.service 文件</span>
+<span class="token function">sudo</span> <span class="token function">vim</span> /etc/systemd/system/frps.service
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="frps-service"><a href="#frps-service" class="headerlink" title="frps.service:"></a>frps.service:</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>Unit<span class="token punctuation">]</span>
+<span class="token comment"># 服务名称，可自定义</span>
+Description <span class="token operator">=</span> frp server
+After <span class="token operator">=</span> network.target syslog.target
+Wants <span class="token operator">=</span> network.target
+
+<span class="token punctuation">[</span>Service<span class="token punctuation">]</span>
+Type <span class="token operator">=</span> simple
+<span class="token comment"># 启动frps的命令，需修改为您的frps的安装路径</span>
+ExecStart <span class="token operator">=</span> /path/to/frps <span class="token parameter variable">-c</span> /path/to/frps.toml
+
+<span class="token punctuation">[</span>Install<span class="token punctuation">]</span>
+WantedBy <span class="token operator">=</span> multi-user.target<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>[] ⚠️ 从 v0.52.0 版本开始，frp 开始支持 TOML、YAML 和 JSON 作为配置文件格式。INI 已被弃用，并将在未来的发布中移除。新功能只能在TOML、YAML 或 JSON 中使用。希望使用这些新功能的用户应相应地切换其配置格式。</li>
+</ul>
+<h2 id="2-服务端Frp配置"><a href="#2-服务端Frp配置" class="headerlink" title="2.服务端Frp配置"></a>2.服务端Frp配置</h2><p>frps（Server）：这是 frp 的服务器端组件，需要部署在一个公网可访问的位置，如一台具有公网 IP 的服务器上。frps 负责接收来自客户端的连接请求，并将这些请求转发到相应的内网服务上。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">bindPort <span class="token operator">=</span> <span class="token number">7000</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="3-客户端Frp配置"><a href="#3-客户端Frp配置" class="headerlink" title="3.客户端Frp配置"></a>3.客户端Frp配置</h2><p>frpc（Client）：这是 frp 的客户端组件，部署在需要穿透 NAT 或防火墙的内网环境中。frpc 会主动连接到 frps，然后通过 frps 实现与公网的通信。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">serverAddr <span class="token operator">=</span> <span class="token string">"x.x.x.x"</span>
+serverPort <span class="token operator">=</span> <span class="token number">7000</span>
+
+<span class="token punctuation">[</span><span class="token punctuation">[</span>proxies<span class="token punctuation">]</span><span class="token punctuation">]</span>
+name <span class="token operator">=</span> <span class="token string">"secret_ssh"</span>
+<span class="token builtin class-name">type</span> <span class="token operator">=</span> <span class="token string">"stcp"</span>
+<span class="token comment"># 只有与此处设置的 secretKey 一致的用户才能访问此服务</span>
+secretKey <span class="token operator">=</span> <span class="token string">"abcdefg"</span>
+localIP <span class="token operator">=</span> <span class="token string">"127.0.0.1"</span>
+localPort <span class="token operator">=</span> <span class="token number">22</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#通过 SSH 访问内网机器，假设用户名为 test</span>
+<span class="token function">ssh</span> <span class="token parameter variable">-o</span> <span class="token assign-left variable">Port</span><span class="token operator">=</span><span class="token number">6000</span> test@127.0.0.1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h2 id="4-自启动"><a href="#4-自启动" class="headerlink" title="4.自启动"></a>4.自启动</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 启动frp</span>
+<span class="token function">sudo</span> systemctl start frps
+<span class="token comment"># 停止frp</span>
+<span class="token function">sudo</span> systemctl stop frps
+<span class="token comment"># 重启frp</span>
+<span class="token function">sudo</span> systemctl restart frps
+<span class="token comment"># 查看frp状态</span>
+<span class="token function">sudo</span> systemctl status frps
+<span class="token comment"># frps 开机自启动</span>
+<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> frps<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
                 
             </div>
             <hr/>
@@ -855,6 +922,58 @@
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
+                <a href="/2024/01/24/Homebrew/">
+                    <div class="card-image">
+                        
+                        <img src="/markdownimages/background/animation/4.jpg" class="responsive-img" alt="Homebrew">
+                        
+                        <span class="card-title">Homebrew</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Homebrew
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2024-01-24
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Homebrew/" class="post-category">
+                                    Homebrew
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Homebrew/">
+                        <span class="chip bg-color">Homebrew</span>
+                    </a>
+                    
+                    <a href="/tags/Mac/">
+                        <span class="chip bg-color">Mac</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
                 <a href="/2024/01/24/IntelliJ%20IDEA%20%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/">
                     <div class="card-image">
                         
@@ -870,9 +989,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2024-01-24
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2024-01-24
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -890,54 +1009,6 @@
                     
                     <a href="/tags/IntelliJ-IDEA/">
                         <span class="chip bg-color">IntelliJ IDEA</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2024/01/24/Jenkines/">
-                    <div class="card-image">
-                        
-                        <img src="/markdownimages/background/animation/13.jpg" class="responsive-img" alt="Jenkins  + Docker + SpringBoot自动部署">
-                        
-                        <span class="card-title">Jenkins  + Docker + SpringBoot自动部署</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            Jenkines
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2024-01-24
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/%E9%83%A8%E7%BD%B2/" class="post-category">
-                                    部署
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/Jenkines/">
-                        <span class="chip bg-color">Jenkines</span>
                     </a>
                     
                 </div>
