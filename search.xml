@@ -81,6 +81,35 @@
     
     
     <entry>
+      <title>Node</title>
+      <link href="/2024/01/24/Node&amp;Npm/"/>
+      <url>/2024/01/24/Node&amp;Npm/</url>
+      
+        <content type="html"><![CDATA[<h2 id="1-常用命令"><a href="#1-常用命令" class="headerlink" title="1.常用命令"></a>1.常用命令</h2><pre class="line-numbers language-none"><code class="language-none"># 使用Node ，Npm版本：node&#x3D;&gt;6.14.4npm&#x3D;&gt;npm -g install npm@4.6.1# macnpm install# node-gyp 依赖于 Python &gt;&#x3D; 2.5.0 &amp; &lt; 3.0.0npm install -g node-gypnpm install --python&#x3D;python2.7# 清除缓存npm cache clean --forcerm -rf node_modulesnpm install# 下载aid-clinpm info aid-cli versionsnpm install -g aid-cli@2.0.0# aid-cli 依赖官网（仓库地址是内网ip，所以必须使用已经下载好的）：https:&#x2F;&#x2F;www.npmjs.com&#x2F;package&#x2F;aid-cli# 阿里云镜像npm仓库地址：1、查看镜像仓库npm config get registry2、设置镜像仓库npm config set registry https:&#x2F;&#x2F;mirrors.huaweicloud.com&#x2F;repository&#x2F;npm&#x2F;npm config set registry http:&#x2F;&#x2F;mirrors.cloud.tencent.com&#x2F;npm&#x2F;npm config set registry https:&#x2F;&#x2F;registry.npmmirror.comnpm config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;# aid-cli在阿里云的官网（可以选择对应的版本直接下载源码）https:&#x2F;&#x2F;npmmirror.com&#x2F;package&#x2F;aid-cli# 手动导入npm包aid-cli最好在项目根目录安装，不加“-g”进行全局安装（容易报错）,且添加sudo执行权限sudo npm install .&#x2F;my-package&#x2F;xxx.tgz# 重新构建npm rebuild node-sass# 查看最新版本npm info wrap-ansi version# yarn 命令yarnyarn config set ignore-engines trueyarn cache clean<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><h2 id="2-Mac-adi-cli项目启动文档"><a href="#2-Mac-adi-cli项目启动文档" class="headerlink" title="2.Mac adi-cli项目启动文档"></a>2.Mac adi-cli项目启动文档</h2><h2 id="a-nvm安装"><a href="#a-nvm安装" class="headerlink" title="a.nvm安装"></a>a.nvm安装</h2><p><code>node 6.14.4 版本，npm -g install npm@4.6.1</code></p><h2 id="b-pyenv-安装python-2-7-18"><a href="#b-pyenv-安装python-2-7-18" class="headerlink" title="b.pyenv 安装python 2.7.18"></a>b.pyenv 安装python 2.7.18</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">brew <span class="token function">install</span> pyenvpyenv <span class="token function">install</span> <span class="token number">2.7</span>.18pyenv global <span class="token number">2.7</span>.18<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><h2 id="c-安装aid-cli"><a href="#c-安装aid-cli" class="headerlink" title="c.安装aid-cli"></a>c.安装aid-cli</h2><p>nvm安装的node目录结构与win不同，<code>/Users/anubis/.nvm/versions/node/v6.14.4/</code>，<br>其中关键的目录有：<code>bin</code>和<code>lib</code>。</p><ol><li><p>向bin目录复制添加aid ，并修改其中的代码，修改完成后赋权<code>chmod u+x aid</code>。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/sh</span><span class="token comment">#basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")</span><span class="token assign-left variable">basedir</span><span class="token operator">=</span><span class="token string">"/Users/anubis/.nvm/versions/node/v6.14.4"</span><span class="token keyword">case</span> <span class="token variable"><span class="token variable">`</span><span class="token function">uname</span><span class="token variable">`</span></span> <span class="token keyword">in</span>    *CYGWIN*<span class="token punctuation">)</span> <span class="token assign-left variable">basedir</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span>cygpath <span class="token parameter variable">-w</span> <span class="token string">"<span class="token variable">$basedir</span>"</span><span class="token variable">`</span></span><span class="token punctuation">;</span><span class="token keyword">esac</span><span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-x</span> <span class="token string">"<span class="token variable">$basedir</span>/bin/node"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>    <span class="token string">"<span class="token variable">$basedir</span>/bin/node"</span>  <span class="token string">"<span class="token variable">$basedir</span>/lib/node_modules/aid-cli/bin/aid.js"</span> <span class="token string">"<span class="token variable">$@</span>"</span>    <span class="token assign-left variable">ret</span><span class="token operator">=</span><span class="token variable">$?</span><span class="token keyword">else</span>     <span class="token function">node</span>  <span class="token string">"<span class="token variable">$basedir</span>/lib/node_modules/aid-cli/bin/aid.js"</span> <span class="token string">"<span class="token variable">$@</span>"</span>    <span class="token assign-left variable">ret</span><span class="token operator">=</span><span class="token variable">$?</span><span class="token keyword">fi</span><span class="token builtin class-name">exit</span> <span class="token variable">$ret</span>`<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li><li><p>向<code>lib/node_modules</code>内复制<code>aid-cli</code>。</p></li></ol><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 控制台内</span>aid <span class="token parameter variable">-v</span><span class="token number">2.0</span>.0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><ol start="3"><li>全局卸载<code>node-sass</code>与<code>node-gyp</code>。</li></ol><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Mac安装node-gyp时需要先安装Xcode与python 2.7.18</span><span class="token comment"># Xcode 你需要通过运行安装</span>xcode-select <span class="token parameter variable">--install</span><span class="token comment"># 卸载 node-sass 与 node-gyp</span><span class="token function">npm</span> uninstall <span class="token parameter variable">-g</span> node-sass@4.14.1<span class="token function">npm</span> uninstall <span class="token parameter variable">-g</span> node-gyp@@7.1.2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><ol start="4"><li>打开<code>/Users/anubis/.nvm/versions/node/v6.14.4/lib/node_modules</code>目录可以看到<code>node-sass</code>和<code>node-gyp</code>目录，<br>将其复制到<code>/Users/anubis/.nvm/versions/node/v6.14.4/lib/node_modules/aid-cli/node_modules</code>内，<br>如果不复制会导致原来aid-cli内的win下的 <code>node-sass</code>和<code>node-gyp</code>与当前系统不匹配。</li></ol><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Node Sass could not <span class="token function">find</span> a binding <span class="token keyword">for</span> your current environment: OS X <span class="token number">64</span>-bit with Node.js <span class="token number">6</span>.xFound bindings <span class="token keyword">for</span> the following environments:    - Windows <span class="token number">64</span>-bit with Node.js <span class="token number">6</span>.x<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre><ol start="5"><li>安装yarn来管理依赖，npm install会导致链接失效</li></ol><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">-g</span> <span class="token function">yarn</span><span class="token comment"># 项目直接 npm install下载依赖会失败：</span><span class="token comment"># Error: Unsupported URL Type: npm:string-width@^4.2.0</span><span class="token comment"># 项目 直接使用 yarn add aid-cli@2.0.0 虽然可以下载成功，</span><span class="token comment"># 但是项目启动时还是会报错，所以采用复制aid-cli依赖的方法，</span><span class="token comment"># 只对 node-sass和node-gyp 进行替换，</span><span class="token comment"># 具体原因是某个依赖内到es6写法node不能识别报错。</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><ol start="6"><li>到项目目录下启动项目</li></ol><pre class="line-numbers language-powershell" data-language="powershell"><code class="language-powershell"><span class="token comment"># 下载依赖</span>yarn<span class="token comment"># 启动</span>aid dev <span class="token operator">-</span>N<span class="token comment"># 构建</span>aid build <span class="token operator">-</span>N<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><ol start="7"><li>修改<code>src/modules/mochaItOm/portal/portal.js</code>接口访问本地Mock,同时配置 <code>.aid/mock/portal.js</code>内的mock接口返回数据。</li></ol><p>将 <code>_this[axio]</code> 替换为 <code>_this.$mochaItOmMock</code> 。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 前端 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Node </tag>
+            
+            <tag> Nvm </tag>
+            
+            <tag> Npm </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Pyppeteer</title>
       <link href="/2024/01/24/Pyppeteer/"/>
       <url>/2024/01/24/Pyppeteer/</url>
@@ -100,6 +129,31 @@
             <tag> Python </tag>
             
             <tag> Pyppeteer </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Spring Boot</title>
+      <link href="/2024/01/24/Spring%20Boot/"/>
+      <url>/2024/01/24/Spring%20Boot/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h1>]]></content>
+      
+      
+      <categories>
+          
+          <category> Java 框架 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Spring Boot </tag>
             
         </tags>
       
@@ -154,60 +208,6 @@
             <tag> RocketMQ </tag>
             
             <tag> 消息队列 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Node</title>
-      <link href="/2024/01/24/Node&amp;Npm/"/>
-      <url>/2024/01/24/Node&amp;Npm/</url>
-      
-        <content type="html"><![CDATA[<h2 id="1-常用命令"><a href="#1-常用命令" class="headerlink" title="1.常用命令"></a>1.常用命令</h2><pre class="line-numbers language-none"><code class="language-none"># 使用Node ，Npm版本：node&#x3D;&gt;6.14.4npm&#x3D;&gt;npm -g install npm@4.6.1# macnpm install# node-gyp 依赖于 Python &gt;&#x3D; 2.5.0 &amp; &lt; 3.0.0npm install -g node-gypnpm install --python&#x3D;python2.7# 清除缓存npm cache clean --forcerm -rf node_modulesnpm install# 下载aid-clinpm info aid-cli versionsnpm install -g aid-cli@2.0.0# aid-cli 依赖官网（仓库地址是内网ip，所以必须使用已经下载好的）：https:&#x2F;&#x2F;www.npmjs.com&#x2F;package&#x2F;aid-cli# 阿里云镜像npm仓库地址：1、查看镜像仓库npm config get registry2、设置镜像仓库npm config set registry https:&#x2F;&#x2F;mirrors.huaweicloud.com&#x2F;repository&#x2F;npm&#x2F;npm config set registry http:&#x2F;&#x2F;mirrors.cloud.tencent.com&#x2F;npm&#x2F;npm config set registry https:&#x2F;&#x2F;registry.npmmirror.comnpm config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;# aid-cli在阿里云的官网（可以选择对应的版本直接下载源码）https:&#x2F;&#x2F;npmmirror.com&#x2F;package&#x2F;aid-cli# 手动导入npm包aid-cli最好在项目根目录安装，不加“-g”进行全局安装（容易报错）,且添加sudo执行权限sudo npm install .&#x2F;my-package&#x2F;xxx.tgz# 重新构建npm rebuild node-sass# 查看最新版本npm info wrap-ansi version# yarn 命令yarnyarn config set ignore-engines trueyarn cache clean<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><h2 id="2-Mac-adi-cli项目启动文档"><a href="#2-Mac-adi-cli项目启动文档" class="headerlink" title="2.Mac adi-cli项目启动文档"></a>2.Mac adi-cli项目启动文档</h2><h2 id="a-nvm安装"><a href="#a-nvm安装" class="headerlink" title="a.nvm安装"></a>a.nvm安装</h2><p><code>node 6.14.4 版本，npm -g install npm@4.6.1</code></p><h2 id="b-pyenv-安装python-2-7-18"><a href="#b-pyenv-安装python-2-7-18" class="headerlink" title="b.pyenv 安装python 2.7.18"></a>b.pyenv 安装python 2.7.18</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">brew <span class="token function">install</span> pyenvpyenv <span class="token function">install</span> <span class="token number">2.7</span>.18pyenv global <span class="token number">2.7</span>.18<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><h2 id="c-安装aid-cli"><a href="#c-安装aid-cli" class="headerlink" title="c.安装aid-cli"></a>c.安装aid-cli</h2><p>nvm安装的node目录结构与win不同，<code>/Users/anubis/.nvm/versions/node/v6.14.4/</code>，<br>其中关键的目录有：<code>bin</code>和<code>lib</code>。</p><ol><li><p>向bin目录复制添加aid ，并修改其中的代码，修改完成后赋权<code>chmod u+x aid</code>。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/sh</span><span class="token comment">#basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")</span><span class="token assign-left variable">basedir</span><span class="token operator">=</span><span class="token string">"/Users/anubis/.nvm/versions/node/v6.14.4"</span><span class="token keyword">case</span> <span class="token variable"><span class="token variable">`</span><span class="token function">uname</span><span class="token variable">`</span></span> <span class="token keyword">in</span>    *CYGWIN*<span class="token punctuation">)</span> <span class="token assign-left variable">basedir</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span>cygpath <span class="token parameter variable">-w</span> <span class="token string">"<span class="token variable">$basedir</span>"</span><span class="token variable">`</span></span><span class="token punctuation">;</span><span class="token keyword">esac</span><span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-x</span> <span class="token string">"<span class="token variable">$basedir</span>/bin/node"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>    <span class="token string">"<span class="token variable">$basedir</span>/bin/node"</span>  <span class="token string">"<span class="token variable">$basedir</span>/lib/node_modules/aid-cli/bin/aid.js"</span> <span class="token string">"<span class="token variable">$@</span>"</span>    <span class="token assign-left variable">ret</span><span class="token operator">=</span><span class="token variable">$?</span><span class="token keyword">else</span>     <span class="token function">node</span>  <span class="token string">"<span class="token variable">$basedir</span>/lib/node_modules/aid-cli/bin/aid.js"</span> <span class="token string">"<span class="token variable">$@</span>"</span>    <span class="token assign-left variable">ret</span><span class="token operator">=</span><span class="token variable">$?</span><span class="token keyword">fi</span><span class="token builtin class-name">exit</span> <span class="token variable">$ret</span>`<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li><li><p>向<code>lib/node_modules</code>内复制<code>aid-cli</code>。</p></li></ol><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 控制台内</span>aid <span class="token parameter variable">-v</span><span class="token number">2.0</span>.0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><ol start="3"><li>全局卸载<code>node-sass</code>与<code>node-gyp</code>。</li></ol><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Mac安装node-gyp时需要先安装Xcode与python 2.7.18</span><span class="token comment"># Xcode 你需要通过运行安装</span>xcode-select <span class="token parameter variable">--install</span><span class="token comment"># 卸载 node-sass 与 node-gyp</span><span class="token function">npm</span> uninstall <span class="token parameter variable">-g</span> node-sass@4.14.1<span class="token function">npm</span> uninstall <span class="token parameter variable">-g</span> node-gyp@@7.1.2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><ol start="4"><li>打开<code>/Users/anubis/.nvm/versions/node/v6.14.4/lib/node_modules</code>目录可以看到<code>node-sass</code>和<code>node-gyp</code>目录，<br>将其复制到<code>/Users/anubis/.nvm/versions/node/v6.14.4/lib/node_modules/aid-cli/node_modules</code>内，<br>如果不复制会导致原来aid-cli内的win下的 <code>node-sass</code>和<code>node-gyp</code>与当前系统不匹配。</li></ol><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Node Sass could not <span class="token function">find</span> a binding <span class="token keyword">for</span> your current environment: OS X <span class="token number">64</span>-bit with Node.js <span class="token number">6</span>.xFound bindings <span class="token keyword">for</span> the following environments:    - Windows <span class="token number">64</span>-bit with Node.js <span class="token number">6</span>.x<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre><ol start="5"><li>安装yarn来管理依赖，npm install会导致链接失效</li></ol><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">-g</span> <span class="token function">yarn</span><span class="token comment"># 项目直接 npm install下载依赖会失败：</span><span class="token comment"># Error: Unsupported URL Type: npm:string-width@^4.2.0</span><span class="token comment"># 项目 直接使用 yarn add aid-cli@2.0.0 虽然可以下载成功，</span><span class="token comment"># 但是项目启动时还是会报错，所以采用复制aid-cli依赖的方法，</span><span class="token comment"># 只对 node-sass和node-gyp 进行替换，</span><span class="token comment"># 具体原因是某个依赖内到es6写法node不能识别报错。</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><ol start="6"><li>到项目目录下启动项目</li></ol><pre class="line-numbers language-powershell" data-language="powershell"><code class="language-powershell"><span class="token comment"># 下载依赖</span>yarn<span class="token comment"># 启动</span>aid dev <span class="token operator">-</span>N<span class="token comment"># 构建</span>aid build <span class="token operator">-</span>N<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><ol start="7"><li>修改<code>src/modules/mochaItOm/portal/portal.js</code>接口访问本地Mock,同时配置 <code>.aid/mock/portal.js</code>内的mock接口返回数据。</li></ol><p>将 <code>_this[axio]</code> 替换为 <code>_this.$mochaItOmMock</code> 。</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> 前端 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> Node </tag>
-            
-            <tag> Nvm </tag>
-            
-            <tag> Npm </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Spring Boot</title>
-      <link href="/2024/01/24/Spring%20Boot/"/>
-      <url>/2024/01/24/Spring%20Boot/</url>
-      
-        <content type="html"><![CDATA[<h1 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h1>]]></content>
-      
-      
-      <categories>
-          
-          <category> Java 框架 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> Spring Boot </tag>
             
         </tags>
       
@@ -362,31 +362,6 @@
             <tag> Dubbo </tag>
             
             <tag> RPC </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Frp</title>
-      <link href="/2024/01/24/Frp/"/>
-      <url>/2024/01/24/Frp/</url>
-      
-        <content type="html"><![CDATA[<h1 id="Frp"><a href="#Frp" class="headerlink" title="Frp"></a>Frp</h1><p>Frp，全称为 Fast Reverse Proxy，是一款高性能的反向代理应用，支持 TCP、UDP 协议，主要用于内网穿透。Frp 的主要功能是帮助用户在有 NAT 或防火墙的环境中建立一个稳定的、低延迟的网络连接。它常被用于远程访问局域网内的服务，如访问家庭网络中的 NAS、游戏服务器、网站服务器等。</p><h3 id="代理类型"><a href="#代理类型" class="headerlink" title="代理类型:"></a>代理类型:</h3><p>frp 支持多种代理类型，以适应不同的使用场景。以下是一些常见的代理类型：</p><ul><li>TCP：提供纯粹的 TCP 端口映射，使服务端能够根据不同的端口将请求路由到不同的内网服务。</li><li>UDP：提供纯粹的 UDP 端口映射，与 TCP 代理类似，但用于 UDP 流量。</li><li>HTTP：专为 HTTP 应用设计，支持修改 Host Header 和增加鉴权等额外功能。</li><li>HTTPS：类似于 HTTP 代理，但专门用于处理 HTTPS 流量。</li><li>STCP：提供安全的 TCP 内网代理，要求在被访问者和访问者的机器上都部署 frpc，不需要在服务端暴露端口。</li><li>SUDP：提供安全的 UDP 内网代理，与 STCP 类似，需要在被访问者和访问者的机器上都部署 frpc，不需要在服务端暴露端口。</li><li>XTCP：点对点内网穿透代理，与 STCP 类似，但流量不需要经过服务器中转。</li><li>TCPMUX：支持服务端 TCP 端口的多路复用，允许通过同一端口访问不同的内网服务。</li></ul><h2 id="1-下载Frp"><a href="#1-下载Frp" class="headerlink" title="1.下载Frp"></a>1.下载Frp</h2><h3 id="Github-仓库下载地址："><a href="#Github-仓库下载地址：" class="headerlink" title="Github 仓库下载地址："></a>Github 仓库下载地址：</h3><p><a href="https://github.com/fatedier/frp/releases">https://github.com/fatedier/frp/releases</a></p><h3 id="中文文档："><a href="#中文文档：" class="headerlink" title="中文文档："></a>中文文档：</h3><p><a href="https://gofrp.org/zh-cn/docs/">https://gofrp.org/zh-cn/docs/</a></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 使用 yum 安装 systemd（CentOS/RHEL）</span>yum <span class="token function">install</span> systemd<span class="token comment"># 使用 apt 安装 systemd（Debian/Ubuntu）</span><span class="token function">apt</span> <span class="token function">install</span> systemd<span class="token comment"># 创建 frps.service 文件</span><span class="token function">sudo</span> <span class="token function">vim</span> /etc/systemd/system/frps.service<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><h4 id="frps-service"><a href="#frps-service" class="headerlink" title="frps.service:"></a>frps.service:</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>Unit<span class="token punctuation">]</span><span class="token comment"># 服务名称，可自定义</span>Description <span class="token operator">=</span> frp serverAfter <span class="token operator">=</span> network.target syslog.targetWants <span class="token operator">=</span> network.target<span class="token punctuation">[</span>Service<span class="token punctuation">]</span>Type <span class="token operator">=</span> simple<span class="token comment"># 启动frps的命令，需修改为您的frps的安装路径</span>ExecStart <span class="token operator">=</span> /path/to/frps <span class="token parameter variable">-c</span> /path/to/frps.toml<span class="token punctuation">[</span>Install<span class="token punctuation">]</span>WantedBy <span class="token operator">=</span> multi-user.target<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><ul><li>[] ⚠️ 从 v0.52.0 版本开始，frp 开始支持 TOML、YAML 和 JSON 作为配置文件格式。INI 已被弃用，并将在未来的发布中移除。新功能只能在TOML、YAML 或 JSON 中使用。希望使用这些新功能的用户应相应地切换其配置格式。</li></ul><h2 id="2-服务端Frp配置"><a href="#2-服务端Frp配置" class="headerlink" title="2.服务端Frp配置"></a>2.服务端Frp配置</h2><p>frps（Server）：这是 frp 的服务器端组件，需要部署在一个公网可访问的位置，如一台具有公网 IP 的服务器上。frps 负责接收来自客户端的连接请求，并将这些请求转发到相应的内网服务上。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">bindPort <span class="token operator">=</span> <span class="token number">7000</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><h2 id="3-客户端Frp配置"><a href="#3-客户端Frp配置" class="headerlink" title="3.客户端Frp配置"></a>3.客户端Frp配置</h2><p>frpc（Client）：这是 frp 的客户端组件，部署在需要穿透 NAT 或防火墙的内网环境中。frpc 会主动连接到 frps，然后通过 frps 实现与公网的通信。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">serverAddr <span class="token operator">=</span> <span class="token string">"x.x.x.x"</span>serverPort <span class="token operator">=</span> <span class="token number">7000</span><span class="token punctuation">[</span><span class="token punctuation">[</span>proxies<span class="token punctuation">]</span><span class="token punctuation">]</span>name <span class="token operator">=</span> <span class="token string">"secret_ssh"</span><span class="token builtin class-name">type</span> <span class="token operator">=</span> <span class="token string">"stcp"</span><span class="token comment"># 只有与此处设置的 secretKey 一致的用户才能访问此服务</span>secretKey <span class="token operator">=</span> <span class="token string">"abcdefg"</span>localIP <span class="token operator">=</span> <span class="token string">"127.0.0.1"</span>localPort <span class="token operator">=</span> <span class="token number">22</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#通过 SSH 访问内网机器，假设用户名为 test</span><span class="token function">ssh</span> <span class="token parameter variable">-o</span> <span class="token assign-left variable">Port</span><span class="token operator">=</span><span class="token number">6000</span> test@127.0.0.1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><h2 id="4-自启动"><a href="#4-自启动" class="headerlink" title="4.自启动"></a>4.自启动</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 启动frp</span><span class="token function">sudo</span> systemctl start frps<span class="token comment"># 停止frp</span><span class="token function">sudo</span> systemctl stop frps<span class="token comment"># 重启frp</span><span class="token function">sudo</span> systemctl restart frps<span class="token comment"># 查看frp状态</span><span class="token function">sudo</span> systemctl status frps<span class="token comment"># frps 开机自启动</span><span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> frps<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
-      
-      
-      <categories>
-          
-          <category> 代理 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> Frp </tag>
             
         </tags>
       
@@ -566,6 +541,31 @@
         <tags>
             
             <tag> Arthas </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Frp</title>
+      <link href="/2024/01/24/Frp/"/>
+      <url>/2024/01/24/Frp/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Frp"><a href="#Frp" class="headerlink" title="Frp"></a>Frp</h1><p>Frp，全称为 Fast Reverse Proxy，是一款高性能的反向代理应用，支持 TCP、UDP 协议，主要用于内网穿透。Frp 的主要功能是帮助用户在有 NAT 或防火墙的环境中建立一个稳定的、低延迟的网络连接。它常被用于远程访问局域网内的服务，如访问家庭网络中的 NAS、游戏服务器、网站服务器等。</p><h3 id="代理类型"><a href="#代理类型" class="headerlink" title="代理类型:"></a>代理类型:</h3><p>frp 支持多种代理类型，以适应不同的使用场景。以下是一些常见的代理类型：</p><ul><li>TCP：提供纯粹的 TCP 端口映射，使服务端能够根据不同的端口将请求路由到不同的内网服务。</li><li>UDP：提供纯粹的 UDP 端口映射，与 TCP 代理类似，但用于 UDP 流量。</li><li>HTTP：专为 HTTP 应用设计，支持修改 Host Header 和增加鉴权等额外功能。</li><li>HTTPS：类似于 HTTP 代理，但专门用于处理 HTTPS 流量。</li><li>STCP：提供安全的 TCP 内网代理，要求在被访问者和访问者的机器上都部署 frpc，不需要在服务端暴露端口。</li><li>SUDP：提供安全的 UDP 内网代理，与 STCP 类似，需要在被访问者和访问者的机器上都部署 frpc，不需要在服务端暴露端口。</li><li>XTCP：点对点内网穿透代理，与 STCP 类似，但流量不需要经过服务器中转。</li><li>TCPMUX：支持服务端 TCP 端口的多路复用，允许通过同一端口访问不同的内网服务。</li></ul><h2 id="1-下载Frp"><a href="#1-下载Frp" class="headerlink" title="1.下载Frp"></a>1.下载Frp</h2><h3 id="Github-仓库下载地址："><a href="#Github-仓库下载地址：" class="headerlink" title="Github 仓库下载地址："></a>Github 仓库下载地址：</h3><p><a href="https://github.com/fatedier/frp/releases">https://github.com/fatedier/frp/releases</a></p><h3 id="中文文档："><a href="#中文文档：" class="headerlink" title="中文文档："></a>中文文档：</h3><p><a href="https://gofrp.org/zh-cn/docs/">https://gofrp.org/zh-cn/docs/</a></p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 使用 yum 安装 systemd（CentOS/RHEL）</span>yum <span class="token function">install</span> systemd<span class="token comment"># 使用 apt 安装 systemd（Debian/Ubuntu）</span><span class="token function">apt</span> <span class="token function">install</span> systemd<span class="token comment"># 创建 frps.service 文件</span><span class="token function">sudo</span> <span class="token function">vim</span> /etc/systemd/system/frps.service<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><h4 id="frps-service"><a href="#frps-service" class="headerlink" title="frps.service:"></a>frps.service:</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>Unit<span class="token punctuation">]</span><span class="token comment"># 服务名称，可自定义</span>Description <span class="token operator">=</span> frp serverAfter <span class="token operator">=</span> network.target syslog.targetWants <span class="token operator">=</span> network.target<span class="token punctuation">[</span>Service<span class="token punctuation">]</span>Type <span class="token operator">=</span> simple<span class="token comment"># 启动frps的命令，需修改为您的frps的安装路径</span>ExecStart <span class="token operator">=</span> /path/to/frps <span class="token parameter variable">-c</span> /path/to/frps.toml<span class="token punctuation">[</span>Install<span class="token punctuation">]</span>WantedBy <span class="token operator">=</span> multi-user.target<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><ul><li>[] ⚠️ 从 v0.52.0 版本开始，frp 开始支持 TOML、YAML 和 JSON 作为配置文件格式。INI 已被弃用，并将在未来的发布中移除。新功能只能在TOML、YAML 或 JSON 中使用。希望使用这些新功能的用户应相应地切换其配置格式。</li></ul><h2 id="2-服务端Frp配置"><a href="#2-服务端Frp配置" class="headerlink" title="2.服务端Frp配置"></a>2.服务端Frp配置</h2><p>frps（Server）：这是 frp 的服务器端组件，需要部署在一个公网可访问的位置，如一台具有公网 IP 的服务器上。frps 负责接收来自客户端的连接请求，并将这些请求转发到相应的内网服务上。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">bindPort <span class="token operator">=</span> <span class="token number">7000</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><h2 id="3-客户端Frp配置"><a href="#3-客户端Frp配置" class="headerlink" title="3.客户端Frp配置"></a>3.客户端Frp配置</h2><p>frpc（Client）：这是 frp 的客户端组件，部署在需要穿透 NAT 或防火墙的内网环境中。frpc 会主动连接到 frps，然后通过 frps 实现与公网的通信。</p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">serverAddr <span class="token operator">=</span> <span class="token string">"x.x.x.x"</span>serverPort <span class="token operator">=</span> <span class="token number">7000</span><span class="token punctuation">[</span><span class="token punctuation">[</span>proxies<span class="token punctuation">]</span><span class="token punctuation">]</span>name <span class="token operator">=</span> <span class="token string">"secret_ssh"</span><span class="token builtin class-name">type</span> <span class="token operator">=</span> <span class="token string">"stcp"</span><span class="token comment"># 只有与此处设置的 secretKey 一致的用户才能访问此服务</span>secretKey <span class="token operator">=</span> <span class="token string">"abcdefg"</span>localIP <span class="token operator">=</span> <span class="token string">"127.0.0.1"</span>localPort <span class="token operator">=</span> <span class="token number">22</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#通过 SSH 访问内网机器，假设用户名为 test</span><span class="token function">ssh</span> <span class="token parameter variable">-o</span> <span class="token assign-left variable">Port</span><span class="token operator">=</span><span class="token number">6000</span> test@127.0.0.1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><h2 id="4-自启动"><a href="#4-自启动" class="headerlink" title="4.自启动"></a>4.自启动</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 启动frp</span><span class="token function">sudo</span> systemctl start frps<span class="token comment"># 停止frp</span><span class="token function">sudo</span> systemctl stop frps<span class="token comment"># 重启frp</span><span class="token function">sudo</span> systemctl restart frps<span class="token comment"># 查看frp状态</span><span class="token function">sudo</span> systemctl status frps<span class="token comment"># frps 开机自启动</span><span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> frps<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> 代理 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Frp </tag>
             
         </tags>
       
