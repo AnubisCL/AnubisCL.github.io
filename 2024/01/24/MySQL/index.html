@@ -458,13 +458,14 @@
 </ul>
 <h4 id="3-4-MySQL-InnoDB-的-REPEATABLE-READ-隔离级别有没有解决幻读"><a href="#3-4-MySQL-InnoDB-的-REPEATABLE-READ-隔离级别有没有解决幻读" class="headerlink" title="3.4 MySQL InnoDB 的 REPEATABLE-READ 隔离级别有没有解决幻读"></a>3.4 MySQL InnoDB 的 REPEATABLE-READ 隔离级别有没有解决幻读</h4><ul>
 <li>答案：通过 间隙锁 + MVCC解决了大部分幻读的问题，彻底解决幻读还是需要使用串行化的隔离级别。</li>
+<li>MVCC 机制:MVCC 为每个数据行维护多个版本，每个版本都有一个可见性标志。当事务开始时，它会获得一个读视图，这个视图决定了事务能看到哪些数据版本。事务在其生命周期内始终看到同一份数据版本，即使有其他事务插入了新的行</li>
 </ul>
 <h5 id="3-4-1-MVCC（Multiversion-Concurrency-Control）"><a href="#3-4-1-MVCC（Multiversion-Concurrency-Control）" class="headerlink" title="3.4.1 MVCC（Multiversion Concurrency Control）"></a>3.4.1 MVCC（Multiversion Concurrency Control）</h5><ul>
 <li>MVCC 翻译为“多版本并发控制”，和数据库锁一样，是一种并发控制的解决方案，主要用于解决 读-写 并发的情况。</li>
+<li>MVCC 是一种读取数据的技术，它允许多个事务同时读取同一份数据的不同版本。在 REPEATABLE-READ 隔离级别下，事务在其生命周期内看到的数据版本是一致的，也就是说，事务在开始时看到的数据版本在整个事务过程中都不会改变。</li>
 </ul>
 <h5 id="3-4-1-1-数据库中对数据的主要操作分别是读和写，在并发的场景下则会出现三种情况："><a href="#3-4-1-1-数据库中对数据的主要操作分别是读和写，在并发的场景下则会出现三种情况：" class="headerlink" title="3.4.1.1 数据库中对数据的主要操作分别是读和写，在并发的场景下则会出现三种情况："></a>3.4.1.1 数据库中对数据的主要操作分别是读和写，在并发的场景下则会出现三种情况：</h5><ul>
-<li>“读-读并发”，“读-写并发”，“写-写并发”</li>
-<li>在没有写的情况下，即“读-读并发”不会出现问题。</li>
+<li>“读-读并发”不会出现问题。</li>
 <li>“写-写并发”则通过加锁解决数据的一致性。</li>
 <li>“读-写并发”则通过MVCC的机制解决。</li>
 </ul>
@@ -480,8 +481,12 @@
 <li>RR中，通过间隙锁解决了部分当前读的幻读问题，通过增加间隙锁将记录之间的间隙锁住，避免新的数据插入。</li>
 </ul>
 <h5 id="3-4-3-未解决的幻读问题："><a href="#3-4-3-未解决的幻读问题：" class="headerlink" title="3.4.3 未解决的幻读问题："></a>3.4.3 未解决的幻读问题：</h5><ul>
-<li>如果两个事务，事务1先进行快照读，然后事务2插入了一条记录并提交，再在事务1中进行update新插入的这条记录是可以更新成功的，这就是发生了幻读。 </li>
-<li>如果两个事务，事务1先进行快照读，然后事务2插入了一条记录并提交，在事务1中进行了当前读之后，在进行快照读也会发生幻读。</li>
+<li><p>如果两个事务，事务1先进行select操作（快照读）<code>select -&gt; A,B</code>，然后事务2插入了一条记录并提交事务2<code>add -&gt; C</code>，再在事务1中进行update新插入的这条记录（当前读操作）是可以更新成功的<code>update -&gt; C</code>，这就是发生了幻读。 </p>
+</li>
+<li><p>如果两个事务，事务1先进行select操作（快照读）<code>select -&gt; A,B</code>，然后事务2插入了一条记录并提交事务2 <code>add -&gt;  C</code>，在事务1中进行了select for update（当前读）之后 <code>select for update -&gt; A,B,C</code>，再进行select（快照读）也会发生幻读 <code>select -&gt; A,B,C</code>。</p>
+</li>
+<li><p>如果两个事务，事务1先进行select操作（快照读）<code>SELECT * FROM users WHERE age = 25; -&gt; A,B</code>，然后事务2插入一条记录并提交事物2<code>（age:唯一索引）</code>，再在事务1中进行select操作<code>select -&gt; A,B,C</code>，因为在唯一性索引上插入的新行不会触发间隙锁。</p>
+</li>
 </ul>
 <h3 id="4-关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价"><a href="#4-关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价" class="headerlink" title="4. 关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价"></a>4. 关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价</h3><h3 id="5-关系型数据库的数据通常存在硬盘中"><a href="#5-关系型数据库的数据通常存在硬盘中" class="headerlink" title="5. 关系型数据库的数据通常存在硬盘中"></a>5. 关系型数据库的数据通常存在硬盘中</h3><h4 id="5-1-MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE-TABLE语句，但是需要将存储引擎设置为：ENGINE-MEMORY"><a href="#5-1-MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE-TABLE语句，但是需要将存储引擎设置为：ENGINE-MEMORY" class="headerlink" title="5.1. MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE TABLE语句，但是需要将存储引擎设置为：ENGINE=MEMORY"></a>5.1. MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用<code>CREATE TABLE</code>语句，但是需要将存储引擎设置为：<code>ENGINE=MEMORY</code></h4><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token comment"># 查看mysql当前使用什么存储引擎</span>
 <span class="token keyword">show</span> engines<span class="token punctuation">;</span>
