@@ -521,10 +521,10 @@
 <li>优化2：索引上的等值查询，向右遍历时且最后一个值不满足等值条件的时候，next-key lock 退化为间隙锁。 </li>
 <li>一个 bug：唯一索引上的范围查询会访问到不满足条件的第一个值为止。</li>
 </ul>
-<h5 id="4-1-6-字典锁（Metadata-Locks）"><a href="#4-1-6-字典锁（Metadata-Locks）" class="headerlink" title="4.1.6 字典锁（Metadata Locks）"></a>4.1.6 字典锁（Metadata Locks）</h5><p>对表结构改变的动作，如ALTER、DROP，他们加锁的过程添加的MDL锁，即字典锁，也叫元数据锁。主要目的是保护数据字典中的元数据不被并发更改。MDL 锁是由MySQL自动管理的，不需要应用程序显式地获取或释放。</p>
+<h5 id="4-1-6-字典锁（MetaData-Locks）"><a href="#4-1-6-字典锁（MetaData-Locks）" class="headerlink" title="4.1.6 字典锁（MetaData Locks）"></a>4.1.6 字典锁（MetaData Locks）</h5><p>对表结构改变的动作，如ALTER、DROP，他们加锁的过程添加的MDL锁，即字典锁，也叫元数据锁。主要目的是保护数据字典中的元数据不被并发更改。MDL 锁是由MySQL自动管理的，不需要应用程序显式地获取或释放。</p>
 <h5 id="4-1-6-1-DML锁的类型："><a href="#4-1-6-1-DML锁的类型：" class="headerlink" title="4.1.6.1 DML锁的类型："></a>4.1.6.1 DML锁的类型：</h5><ul>
-<li>MDL_EXCLUSIVE (EX)：独占锁，用于写入操作，阻止所有其他类型的 MDL 锁。</li>
-<li>MDL_SHARED (SH)：共享锁，用于读取操作，允许其他共享锁，但阻止独占锁。</li>
+<li>MDL_EXCLUSIVE (EX)：排他字典锁，用于写入操作，阻止所有其他类型的 MDL 锁。</li>
+<li>MDL_SHARED (SH)：共享字典锁，用于读取操作，允许其他共享锁，但阻止独占锁。</li>
 <li>MDL_SHARED_UPGRADABLE (SX)：可升级共享锁，用于读取操作，允许其他共享锁，但阻止独占锁。这种锁可以升级为独占锁。</li>
 <li>MDL_INTENTION_EXCLUSIVE (IX)：意向独占锁，表示事务希望在将来获取独占锁。</li>
 </ul>
@@ -999,18 +999,18 @@
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2024/01/24/Maven/">
+                <a href="/2024/01/24/Homebrew/">
                     <div class="card-image">
                         
-                        <img src="/markdownimages/background/animation/6.jpg" class="responsive-img" alt="Maven">
+                        <img src="/markdownimages/background/animation/4.jpg" class="responsive-img" alt="Homebrew">
                         
-                        <span class="card-title">Maven</span>
+                        <span class="card-title">Homebrew</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            Maven
+                            Homebrew
                         
                     </div>
                     <div class="publish-info">
@@ -1021,8 +1021,8 @@
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" class="post-category">
-                                    构建工具
+                            <a href="/categories/Homebrew/" class="post-category">
+                                    Homebrew
                                 </a>
                             
                             
@@ -1032,8 +1032,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Maven/">
-                        <span class="chip bg-color">Maven</span>
+                    <a href="/tags/Homebrew/">
+                        <span class="chip bg-color">Homebrew</span>
+                    </a>
+                    
+                    <a href="/tags/Mac/">
+                        <span class="chip bg-color">Mac</span>
                     </a>
                     
                 </div>
