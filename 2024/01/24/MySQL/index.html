@@ -388,7 +388,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-08-08
+                    2024-08-12
                 </div>
                 
 
@@ -488,7 +488,47 @@
 <li><p>如果两个事务，事务1先进行select操作（快照读）<code>SELECT * FROM users WHERE age = 25; -&gt; A,B</code>，然后事务2插入一条记录并提交事物2<code>（age:唯一索引）</code>，再在事务1中进行select操作<code>select -&gt; A,B,C</code>，因为在唯一性索引上插入的新行不会触发间隙锁。</p>
 </li>
 </ul>
-<h3 id="4-关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价"><a href="#4-关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价" class="headerlink" title="4. 关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价"></a>4. 关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价</h3><h3 id="5-关系型数据库的数据通常存在硬盘中"><a href="#5-关系型数据库的数据通常存在硬盘中" class="headerlink" title="5. 关系型数据库的数据通常存在硬盘中"></a>5. 关系型数据库的数据通常存在硬盘中</h3><h4 id="5-1-MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE-TABLE语句，但是需要将存储引擎设置为：ENGINE-MEMORY"><a href="#5-1-MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE-TABLE语句，但是需要将存储引擎设置为：ENGINE-MEMORY" class="headerlink" title="5.1. MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE TABLE语句，但是需要将存储引擎设置为：ENGINE=MEMORY"></a>5.1. MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用<code>CREATE TABLE</code>语句，但是需要将存储引擎设置为：<code>ENGINE=MEMORY</code></h4><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token comment"># 查看mysql当前使用什么存储引擎</span>
+<h3 id="4-关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价"><a href="#4-关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价" class="headerlink" title="4. 关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价"></a>4. 关系型数据库十分强调数据的一致性，并为此降低读写性能付出了巨大的代价</h3><h4 id="4-1-InnoDB的锁机制"><a href="#4-1-InnoDB的锁机制" class="headerlink" title="4.1 InnoDB的锁机制"></a>4.1 InnoDB的锁机制</h4><p>根据不同的锁粒度：</p>
+<ul>
+<li>行级锁：根据锁粒度区分：记录锁（Record Lock 锁索引记录）、间隙锁（Gap Lock 锁索引记录直接的间隙）、间隙记录锁（Next-Key Lock 同时锁索引记录和间隙，范围左开右闭）、</li>
+<li>页级锁（InnoDB没有）：</li>
+<li>表级锁：对表加锁，包含：意向锁、AUTO-INC锁、字典锁、表级排他&amp;共享锁、</li>
+<li>全局锁：影响整个MySQL实例的锁。<code>FLUSH TABLES WITH READ LOCK</code>这个命令会锁定整个数据库实例所有的表（全局读锁定），主要用于全局备份等操作，执行命令后库实例中的所有表都被锁定为只读。</li>
+</ul>
+<h5 id="4-1-1-共享锁和排他锁"><a href="#4-1-1-共享锁和排他锁" class="headerlink" title="4.1.1 共享锁和排他锁"></a>4.1.1 共享锁和排他锁</h5><p>Innodb中的锁在锁的级别上一般分为两种，一种是共享锁（S锁），一种是排他锁（X锁）</p>
+<ul>
+<li>共享锁又称读锁，是读取操作创建的锁。其他用户可以并发读取数据，但任何事物都不能对数据进行修改（获取数据上的排他锁），直到已释放所有共享锁</li>
+<li>排他锁又称写锁，如果事务T对数据A加上排他锁后，则其他事务不能再对A加任何类型的锁。获得排他锁的事务既能读取数据，又能修改数据。</li>
+<li>表级排他&amp;共享锁：<code>LOCK TABLES table READ</code>：添加表级共享锁， <code>LOCK TABLES table WRITE</code>：添加表级排他锁。</li>
+</ul>
+<h5 id="4-1-2-意向锁（Intention-Locks）"><a href="#4-1-2-意向锁（Intention-Locks）" class="headerlink" title="4.1.2 意向锁（Intention Locks）"></a>4.1.2 意向锁（Intention Locks）</h5><p>当多个事务想要访问一个共享资源时，如果每个事务都直接请求获取锁，那么就可能会导致互相阻塞，甚至导致死锁。<br>为了解决这个问题，MySQL引入了意向锁机制。所以意向锁上数据库管理系统中用于实现锁协议的一种锁机制，旨在处理不同锁力度（如行锁和表锁）之间的并发性问题。（相同锁粒度（如多个行级锁）之间的并发性问题通过行级互斥锁解决。）</p>
+<ul>
+<li>意向排他锁（IX锁），表示事务打算在资源上设置排他锁。这表示事务计划修改，并不希望在读取时有其他事务同时设置共享排他锁。</li>
+<li>意向共享锁（IS锁），表示事务打算在资源上设置共享锁。这通常用于表示事务计划读取资源，并不希望在读取事有其他事务设置排他锁。</li>
+<li>插入意向锁是一种由插入操作在行插入之前设置的间隙锁。这种锁表明了插入的意图，以这样一种方式，如果多个事务插入到同一索引间隙中但不在间隙内到相同位置插入，则他们不需要互相等待。<br>注意：</li>
+<li>意向锁是一个表级锁（作用范围是针对整个表，而不是针对表中的具体行或页），并且他会在触发意向锁的事务提交或者回滚后释放。</li>
+<li>意向锁本身不锁定资源，而是未来通知其他事务，以防止它们在资源上设置不兼容的锁。</li>
+<li>意向锁并不是直接由用户请求的，而是由MySQL管理的。</li>
+</ul>
+<h5 id="4-1-3-记录锁（Record-Lock）"><a href="#4-1-3-记录锁（Record-Lock）" class="headerlink" title="4.1.3 记录锁（Record Lock）"></a>4.1.3 记录锁（Record Lock）</h5><p>记录锁是加在索引记录上的锁，是一个典型的行级锁，如果没有索引InnoDB回创建一个隐藏的聚簇索引（隐藏主键row_id），并使用这个索引进行记录锁定。</p>
+<h5 id="4-1-4-间隙锁（Gap-Lock）"><a href="#4-1-4-间隙锁（Gap-Lock）" class="headerlink" title="4.1.4 间隙锁（Gap Lock）"></a>4.1.4 间隙锁（Gap Lock）</h5><p>间隙锁是锁索引记录之间的间隙。</p>
+<h5 id="4-1-5-间隙记录锁（Next-Key-Lock）"><a href="#4-1-5-间隙记录锁（Next-Key-Lock）" class="headerlink" title="4.1.5 间隙记录锁（Next-Key Lock）"></a>4.1.5 间隙记录锁（Next-Key Lock）</h5><p>是Record Lock和Gap Lock的组合，同时锁索引记录和间隙，他的范围是左开右闭。</p>
+<p>注意 MySQL加锁原则为，两个“原则”、两个“优化”和一个“bug”：</p>
+<ul>
+<li>原则1：加锁的基本单位是next-key lock。是一个前开后闭区间。</li>
+<li>原则2：查找过程中访问到的对象才会加锁。 </li>
+<li>优化1：索引上的等值查询，给唯一索引加锁的时候，next-key lock 退化为行锁。 </li>
+<li>优化2：索引上的等值查询，向右遍历时且最后一个值不满足等值条件的时候，next-key lock 退化为间隙锁。 </li>
+<li>一个 bug：唯一索引上的范围查询会访问到不满足条件的第一个值为止。</li>
+</ul>
+<h5 id="4-1-6-字典锁（Metadata-Locks）"><a href="#4-1-6-字典锁（Metadata-Locks）" class="headerlink" title="4.1.6 字典锁（Metadata Locks）"></a>4.1.6 字典锁（Metadata Locks）</h5><p>对表结构改变的动作，如ALTER、DROP，他们加锁的过程添加的MDL锁，即字典锁，也叫元数据锁。主要目的是保护数据字典中的元数据不被并发更改。MDL 锁是由MySQL自动管理的，不需要应用程序显式地获取或释放。</p>
+<h5 id="4-1-6-1-DML锁的类型："><a href="#4-1-6-1-DML锁的类型：" class="headerlink" title="4.1.6.1 DML锁的类型："></a>4.1.6.1 DML锁的类型：</h5><ul>
+<li>MDL_EXCLUSIVE (EX)：独占锁，用于写入操作，阻止所有其他类型的 MDL 锁。</li>
+<li>MDL_SHARED (SH)：共享锁，用于读取操作，允许其他共享锁，但阻止独占锁。</li>
+<li>MDL_SHARED_UPGRADABLE (SX)：可升级共享锁，用于读取操作，允许其他共享锁，但阻止独占锁。这种锁可以升级为独占锁。</li>
+<li>MDL_INTENTION_EXCLUSIVE (IX)：意向独占锁，表示事务希望在将来获取独占锁。</li>
+</ul>
+<h3 id="5-关系型数据库的数据通常存在硬盘中"><a href="#5-关系型数据库的数据通常存在硬盘中" class="headerlink" title="5. 关系型数据库的数据通常存在硬盘中"></a>5. 关系型数据库的数据通常存在硬盘中</h3><h4 id="5-1-MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE-TABLE语句，但是需要将存储引擎设置为：ENGINE-MEMORY"><a href="#5-1-MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE-TABLE语句，但是需要将存储引擎设置为：ENGINE-MEMORY" class="headerlink" title="5.1. MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用CREATE TABLE语句，但是需要将存储引擎设置为：ENGINE=MEMORY"></a>5.1. MySQL的数据存储也可以基于内存，即MySQL的内存表技术。它允许将数据和索引存储在内存中，从而提高检索速度和修改数据的效率。创建内存表于创建普通表一样，使用<code>CREATE TABLE</code>语句，但是需要将存储引擎设置为：<code>ENGINE=MEMORY</code></h4><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token comment"># 查看mysql当前使用什么存储引擎</span>
 <span class="token keyword">show</span> engines<span class="token punctuation">;</span>
 
 <span class="token comment"># 查看mysql当前默认存储引擎</span>
@@ -507,7 +547,7 @@
 <li>数据冗余，把一些重要的数据在表中做冗余，就可以避免关联查询</li>
 <li>宽表，就是基于一定的join关系，吧数据库中多张表的数据打平做成一张大的宽表，可以同步到ES或者直接在数据库汇总查询。</li>
 </ul>
-
+<h3 id="2"><a href="#2" class="headerlink" title="2."></a>2.</h3>
                 
             </div>
             <hr/>
