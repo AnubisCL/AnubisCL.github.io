@@ -388,7 +388,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-08-12
+                    2024-09-05
                 </div>
                 
 
@@ -410,7 +410,56 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h1><h2 id="一、关系型数据库的特点："><a href="#一、关系型数据库的特点：" class="headerlink" title="一、关系型数据库的特点："></a>一、关系型数据库的特点：</h2><h3 id="1-传统关系型数据库中的数据以列和行的方式进行存储"><a href="#1-传统关系型数据库中的数据以列和行的方式进行存储" class="headerlink" title="1. 传统关系型数据库中的数据以列和行的方式进行存储"></a>1. 传统关系型数据库中的数据以列和行的方式进行存储</h3><h3 id="2-关系型数据库采用结构化查询语言（SQL）对数据进行查询"><a href="#2-关系型数据库采用结构化查询语言（SQL）对数据进行查询" class="headerlink" title="2. 关系型数据库采用结构化查询语言（SQL）对数据进行查询"></a>2. 关系型数据库采用结构化查询语言（SQL）对数据进行查询</h3><h3 id="3-关系型数据库强调ACID（原子性-Atomicity，一致性-Consistency，隔离性-Isolation，持久性-Durability）"><a href="#3-关系型数据库强调ACID（原子性-Atomicity，一致性-Consistency，隔离性-Isolation，持久性-Durability）" class="headerlink" title="3. 关系型数据库强调ACID（原子性-Atomicity，一致性-Consistency，隔离性-Isolation，持久性-Durability）"></a>3. 关系型数据库强调ACID（原子性-Atomicity，一致性-Consistency，隔离性-Isolation，持久性-Durability）</h3><ul>
+                <h1 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h1><h2 id="一、关系型数据库的特点："><a href="#一、关系型数据库的特点：" class="headerlink" title="一、关系型数据库的特点："></a>一、关系型数据库的特点：</h2><h3 id="1-传统关系型数据库中的数据以列和行的方式进行存储"><a href="#1-传统关系型数据库中的数据以列和行的方式进行存储" class="headerlink" title="1. 传统关系型数据库中的数据以列和行的方式进行存储"></a>1. 传统关系型数据库中的数据以列和行的方式进行存储</h3><h4 id="1-1-Innodb存储引擎"><a href="#1-1-Innodb存储引擎" class="headerlink" title="1.1.Innodb存储引擎"></a>1.1.Innodb存储引擎</h4><p>Innodb存储引擎支持两种常见的索引数据结构：B+树索引、Hash索引，其中B+树索引是目前关系型数据库系统中最常见、最有效的索引。</p>
+<h5 id="1-1-1-B-树索引"><a href="#1-1-1-B-树索引" class="headerlink" title="1.1.1 B+树索引"></a>1.1.1 B+树索引</h5><p>B+树索引分为聚簇索引与非聚簇索引。聚簇索引就是按照每张表的主键构造一个B+树，B+树的叶子节点中记录着表中一行记录的所有值。非聚簇索引的叶节点不包含行记录的所有值，只包含索引值和主键的值。</p>
+<h6 id="B-树特点："><a href="#B-树特点：" class="headerlink" title="B+树特点："></a>B+树特点：</h6><ul>
+<li>1.B+树是一颗平衡树，每个叶子节点到根节点的路径长度相同，<code>查找效率较高</code>。</li>
+<li>2.B+树的所有关键字都在叶子节点上，因此<code>(支持)范围查询</code>时只需要遍历一遍叶子节点即可。</li>
+<li>3.B+树的叶子节点都按照关键字大小顺序存放，因此可以快速的支持按照关键字大小进行<code>(支持)排序</code>。</li>
+<li>4.B+树的非叶子节点不存储实际数据，因此可以<code>存储更多的索引数据</code>。</li>
+<li>5.B+树的非叶子节点使用指针连接子节点，因此可以快速的<code>支持范围查询</code>和<code>倒叙查询</code>。</li>
+<li>6.B+树的叶子节点之间通过双向链表连接，方便进行<code>范围查询</code>。</li>
+</ul>
+<h6 id="B-树优点-缺点："><a href="#B-树优点-缺点：" class="headerlink" title="B+树优点 &amp; 缺点："></a>B+树优点 &amp; 缺点：</h6><ul>
+<li>在节点分裂和合并时，<code>IO操作减少</code>。B+树到叶子节点的大小就是固定的，而且节点的大小一般都会设置为一页的大小，这就使得节点分裂和合并时，IO操作很少，只需要读取和写入一次。</li>
+<li><code>有利于磁盘预读</code>。由于B+树的节点大小是固定的，因此可以很好的利用磁盘预读的特性，一次性读取多个节点到内存中，可以减少IO操作到次数，提高查询效率。</li>
+<li><code>有利于缓存</code>。B+树到非叶子节点只存储指向子节点的指针，而不存数据，这一可以使得缓存能够容纳更多的索引数据，从而提高缓存的命中率，加快查询速度。</li>
+<li>B+树<code>索引的维护成本比较高</code>，插入删除数据时需要调整索引结构，这个过程可能会涉及到页分裂和页合并等操作。</li>
+</ul>
+<h6 id="为什么不用B树："><a href="#为什么不用B树：" class="headerlink" title="为什么不用B树："></a>为什么不用B树：</h6><p>B树（B- Tree）和B+树（B+ Tree）是两种常用的树结构，B是Balanced首字母，平衡的意思，MySQL的InnoDB使用的是B+树，MongoDB使用的就是B树存储。B树属于多叉树，又名平衡多路查找树，B树多设计目的是为了减少磁盘访问次数，提高查询性能。</p>
+<p>m阶的B树，满足如下条件：</p>
+<ul>
+<li>每个节点最多只有m个子节点。</li>
+<li>每个非叶子节点（除了根）具有至少[m&#x2F;2]子节点。</li>
+<li>如果根不是叶节点，则根至少有两个子节点。</li>
+<li>具有K个子节点的非叶节点包含k-1个键。</li>
+<li>所有叶子都出现在同一水平，没有任何信息（高度一致）。</li>
+</ul>
+<p>特点：</p>
+<ul>
+<li>B树是一种多路搜索树，每个节点可以包含多个子节点。相当于二叉搜索树，B树可以存储更多的关键字和子节点，从而降低了树的高度，减少了磁盘访问次数。</li>
+<li>B树通过在插入和删除操作时进行节点的分裂和合并，保持树的平衡状态。这样可以确保树的高度适中保持在可接受的范围内，保证了较快的查询性能。</li>
+<li>B树的节点中的关键字按照升序排序，使得范围查询操作更加高效。通过遍历树中的叶子姐弟哪，可以顺序获取连续的数据。</li>
+<li>B树的关键字和数据项可以存储在叶子节点和非叶子节点。并且每个关键字出现且只出现在一个节点中。</li>
+<li>B树的搜索可能在非叶子节点上结束，他的搜索性能相当于在关键字全集中做二分查找。</li>
+</ul>
+<p>区别：</p>
+<ul>
+<li>1.数据存储位置：在B树中，数据项存储在叶子节点和非叶子节点上，而B+树中，数据项只存储在叶子节点上。非叶子节点只包含键值信息。</li>
+<li>2.叶子节点指针：B树的叶子节点之间没有指针连接，每个叶子节点独立存储数据项。而B+树的叶子节点通过指针连接成一个连表，可以方便的进行范围查询。</li>
+</ul>
+<h6 id="为什么不用红黑树："><a href="#为什么不用红黑树：" class="headerlink" title="为什么不用红黑树："></a>为什么不用红黑树：</h6><p>红黑树是一种自平衡的二叉查找树。红黑树适用于关联数组、优先队列等。<br>优点：</p>
+<ul>
+<li><code>保证最坏情况下的性能</code>：红黑树通过维持树的大致平衡，而不是完美平衡。确保了在插入删除和查找操作中最坏情况下的时间复杂度均为O(log n)。这比普通的二叉搜索树(在最坏情况下可能退化为连表，时间复杂度为O(n)好得多)。</li>
+<li><code>自平衡</code>：每次插入或删除操作后，红黑树通过旋转和重新着色的方法自动维持平衡，无需额外的操作或维护。</li>
+<li><code>数据结构简洁</code>：节点只需要额外存储一个颜色位，因此相比于其他平衡树（如AVL树）来说，内存的额外开销较小。</li>
+</ul>
+<h5 id="1-1-2-Hash索引"><a href="#1-1-2-Hash索引" class="headerlink" title="1.1.2 Hash索引"></a>1.1.2 Hash索引</h5><p>哈希索引是将索引列的值通过哈希函数计算后得到一个桶的编号，然后将桶内的记录保存在一个链表或者树结构中。</p>
+<ul>
+<li>哈希索引适用于等值查询，但不适合范围查询和排序操作。</li>
+<li>B+树索引在节点中存储多个键值对，因此可以充分利用磁盘块的空间提高空间利用率，而哈希索引由于需要存储哈希值和指针，因此空间利用率低。</li>
+</ul>
+<h3 id="2-关系型数据库采用结构化查询语言（SQL）对数据进行查询"><a href="#2-关系型数据库采用结构化查询语言（SQL）对数据进行查询" class="headerlink" title="2. 关系型数据库采用结构化查询语言（SQL）对数据进行查询"></a>2. 关系型数据库采用结构化查询语言（SQL）对数据进行查询</h3><h3 id="3-关系型数据库强调ACID（原子性-Atomicity，一致性-Consistency，隔离性-Isolation，持久性-Durability）"><a href="#3-关系型数据库强调ACID（原子性-Atomicity，一致性-Consistency，隔离性-Isolation，持久性-Durability）" class="headerlink" title="3. 关系型数据库强调ACID（原子性-Atomicity，一致性-Consistency，隔离性-Isolation，持久性-Durability）"></a>3. 关系型数据库强调ACID（原子性-Atomicity，一致性-Consistency，隔离性-Isolation，持久性-Durability）</h3><ul>
 <li>原子性：事务作为一个整体被执行，包含在其中的对数据库的操作要么全部被执行，要么都不执行。</li>
 <li>一致性：事务应确保数据库的状态从一个一致状态转变为另一个一致的状态。</li>
 <li>隔离性：多个事务兵法执行时，一个事务的执行不应影响其他事务。</li>
@@ -476,6 +525,59 @@
 <li>在RR中，快照会在事务中第一次SELECT语句执行时生成，只有在本事务中对数据进行更改才会更新快照。</li>
 <li>在RC中，每次读取都会重新生成一个快照，总是读取行的最新版本。</li>
 </ul>
+<h5 id="3-4-1-3-UndoLog"><a href="#3-4-1-3-UndoLog" class="headerlink" title="3.4.1.3 UndoLog"></a>3.4.1.3 UndoLog</h5><ul>
+<li>undo log是MySQL用于回退的日志，在事务没提交之前，MySQL会先记录更新前的数据到undo log日志文件中，当事务回滚时或者数据库崩溃时，可以利用undo log来进行回退。</li>
+<li>undo log“更新前的数据”就是快照读，即UndoLog是MVCC实现的重要手段。</li>
+<li>如果一条记录在同一时刻可能会有多个事务在执行，那么，undo log会有一条记录的多个快照，那么在这一时刻发生select要进行快照读的时候，要读取哪个快照呢？这样就需要用到另外几个信息了。</li>
+</ul>
+<h5 id="3-4-1-4-行记录的隐式字段"><a href="#3-4-1-4-行记录的隐式字段" class="headerlink" title="3.4.1.4 行记录的隐式字段"></a>3.4.1.4 行记录的隐式字段</h5><p>在数据库中的每行记录中，除了保存我们自定义的一些字段以外，还有一些重要的隐式字段：</p>
+<ul>
+<li>db_row_id:隐藏主键，如果我们没有给表创建主键，那么会以这个字段来创建聚簇索引。</li>
+<li>db_trx_id:对这条记录做了最新一次修改的事务ID。</li>
+<li>db_roll_ptr:回滚指针，指向这条记录的上一个版本，其实她指向的就是UndoLog中的上一个版本的快照的地址。</li>
+<li>以上字段，只有在聚簇索引的行记录中才会有，而在普通的二级索引记录中是没有的。</li>
+</ul>
+<h5 id="3-4-1-5-Read-View"><a href="#3-4-1-5-Read-View" class="headerlink" title="3.4.1.5 Read View"></a>3.4.1.5 Read View</h5><p>Read View主要用来解决可见性的问题，即他会来告诉我们本次事务应该看到哪个快照，不应该看到哪个快照。<br>在Mysql中，不同的事务隔离级别，比如我们常见的RR和RC，RR要求在一个事务中，多次读取的结果是保持一致的，而RC则要求每次都要读取到最新的值。</p>
+<ul>
+<li>在可重复读（Repeatabel Read）级别下，快照读（ReadView）在事务开始时创建一次，并在整个事务期间保持不变。</li>
+<li>在读已提交（Read Committed）级别下，快照读（ReadView）会在每次查询的时候重新创建，以反映数据库中最新提交更改。<br>在Read View中有4个重要的属性：</li>
+<li>trx_ids: 表示在生成ReadView时当前系统中活跃的读写事务的事务Id列表。</li>
+<li>low_limit_id: 应该分配给下一个事务的Id的值。</li>
+<li>up_limit_id: 未提交的事务中最小的事务Id。</li>
+<li>creator_trx_id: 创建这个Read View 的事务Id。<br>trx_ids 中包含了low_limit_id和up_limit_id的信息，其实 <code>trx_ids = [up_limit_id, low_limit_id]</code>(但是需要注意，他并不一定连续，只是会包含up_limit_id，并且小于low_limit_id，左闭右开)。<br>也就是说，在读已提交（Read Committed）级别下，每次读取数据时都会生成一个ReadView，并在其中记录上trx_ids（包含[up_limit_id, low_limit_id]）和，creator_trx_id。</li>
+</ul>
+<h6 id="eg：如何判断一个事务应该看到哪些快照，不应该看到哪些快照？"><a href="#eg：如何判断一个事务应该看到哪些快照，不应该看到哪些快照？" class="headerlink" title="eg：如何判断一个事务应该看到哪些快照，不应该看到哪些快照？"></a>eg：如何判断一个事务应该看到哪些快照，不应该看到哪些快照？</h6><p>假如一个ReadView的内容为：</p>
+<pre class="line-numbers language-none"><code class="language-none">trx_ids &#x3D; [5,6,8)
+low_limit_id &#x3D; 8
+up_limit_id &#x3D; 5
+creator_trx_id &#x3D; 7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>假设当前事务要读取某一个记录行，该记录行的 db_trx_id 为 trx_id，那么就有以下几种情况：</p>
+<ul>
+<li><ol>
+<li><code>trx_id &lt; up_limit_id</code> 即小于5的事务，说明这些事务在生成ReadView之前就已经提交了，那么该事务的结果就是可见的。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><code>trx_id &gt; low_limit_id</code> 即大于8的事务，说明该事务在生成ReadView后才生成，所以该事务的结果就是不可见的。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><code>up_limit_id  &lt; trx_id &lt; low_limit_id</code> 即大于等于5小于8，则会再拿事务Id和ReadView中的trx_ids进行逐一比较。</li>
+</ol>
+</li>
+</ul>
+<p>a. 如果，事务Id在trx_ids列表中,如6，那么表示在当前事务开启时，这个事务还是活跃的，则这个记录对于当前事务来说不可见。<br>b. 如果，事务Id不在trx_ids列表中,如7，那么表示在当前事务开启之前，其他事务对数据进行修改并提交了，则这个记录对当前事务是可见的。<br>c. 如果，trx_id &#x3D; creator_trx_id ，那么表示这个记录对当前事务是可见（都在当前的同一事务中）。</p>
+<p>总结：一个事务，能看到的是在他开始之前就已经提交的事务的结果，而未提交的结果都是不可见的。<br>所以，当读取一条记录的时候，经过上面的判断，发现记录对当前事务可见，那么就直接返回就行了。那么如果不可见怎么办？就需要用到undo log了，即当数据的事务Id不符合Read View规则时，就需要从 undo log 里面获取数据的历史快照，然后数据快照的事务Id再来和Read View 进行可见性比较，如果找到一条快照则返回，找不到则返回空。</p>
+<h5 id="3-4-1-6-二级索引在索引覆盖时如何使用MVCC"><a href="#3-4-1-6-二级索引在索引覆盖时如何使用MVCC" class="headerlink" title="3.4.1.6 二级索引在索引覆盖时如何使用MVCC"></a>3.4.1.6 二级索引在索引覆盖时如何使用MVCC</h5><h6 id="储备知识："><a href="#储备知识：" class="headerlink" title="储备知识："></a>储备知识：</h6><ul>
+<li>1.行记录的隐式字段</li>
+<li>2.在MVCC中通过隐藏字段中的<code>db_roll_ptr</code>(回滚指针)来构建版本链，<code>db_trx_id </code>（对这条记录做了最新一次修改的事务ID）也是一个重要的用来判断快照可见性的字段。</li>
+<li>3.在Innodb的聚簇索引（主键索引）中，叶子节点上保存的是整行的记录。非聚簇索引（二级索引）中，叶子节点上只保存了主键的信息。</li>
+<li>4.在一条查询语句中，如果能用到索引覆盖，则会直接使用二级索引进行检索，不会回表。</li>
+</ul>
+<h6 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h6><ul>
+<li>如果某个查询语句的查询字段都包含在二级索引中，即会走覆盖索引，不需要回表去读取聚簇索引的页记录。但是，版本链的头节点在聚簇索引中，不在二级索引中，通过二级索引的记录无法直接找到版本链。在这种情况下如何使用MVCC？<br>MySQL官网描述：<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.4/en/optimizing-innodb-transaction-management.html%EF%BC%88%E5%A6%82%E6%9E%9C%E5%8F%91%E8%A1%8C%E4%BA%8C%E7%BA%A7%E7%B4%A2%E5%BC%95%E9%A1%B5%E6%9C%89%E4%B8%80%E4%B8%AA">https://dev.mysql.com/doc/refman/8.4/en/optimizing-innodb-transaction-management.html（如果发行二级索引页有一个</a> page_max_trx_id（表示修改该页的最大事务Id） 太新，或者如果二级索引中的记录被删除标记，InnoDB可能需要使用聚簇索引来查找记录），也就是说，索引覆盖并不是用到了联合索引就一定会去走，在括号中的情况下还是会去回表，通过覆盖索引进行查询。</li>
+</ul>
+<h6 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h6><p>在二级索引中，用一个额外的名为page_max_trx_id的变量来记录表示修改过该页的最大事务id。如果当前查询的到的readVidew的<code>up_limit_id &gt; page_max_trx_id </code>，说明在创建readVidew时，最后一次更新二级索引的事务已经提交了，意味着二级索引里的提交对于当前查询<br>都是可见的。这时，如果这个二级索引的记录没有被删除，那么就可以直接走索引覆盖查询。否则，就意味着数据可能被修改了，不能直接查询，需要回表，通过聚簇索引进行查询。同时使用聚簇索引时，叶子节点行记录中设计包含了版本链就可以用到MVCC了。</p>
 <h5 id="3-4-2-解决的幻读问题："><a href="#3-4-2-解决的幻读问题：" class="headerlink" title="3.4.2 解决的幻读问题："></a>3.4.2 解决的幻读问题：</h5><ul>
 <li>RR中，通过MVCC机制，解决了快照读的幻读问题，RR中的快照读只有第一次会进行数据查询，后面都是直接读取快照，所以不会发生幻读。</li>
 <li>RR中，通过间隙锁解决了部分当前读的幻读问题，通过增加间隙锁将记录之间的间隙锁住，避免新的数据插入。</li>
@@ -547,7 +649,7 @@
 <li>数据冗余，把一些重要的数据在表中做冗余，就可以避免关联查询</li>
 <li>宽表，就是基于一定的join关系，吧数据库中多张表的数据打平做成一张大的宽表，可以同步到ES或者直接在数据库汇总查询。</li>
 </ul>
-<h3 id="2"><a href="#2" class="headerlink" title="2."></a>2.</h3>
+
                 
             </div>
             <hr/>
@@ -999,18 +1101,18 @@
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2024/01/24/Maven/">
+                <a href="/2024/01/24/Frp/">
                     <div class="card-image">
                         
-                        <img src="/markdownimages/background/animation/6.jpg" class="responsive-img" alt="Maven">
+                        <img src="/markdownimages/background/animation/16.jpeg" class="responsive-img" alt="Frp">
                         
-                        <span class="card-title">Maven</span>
+                        <span class="card-title">Frp</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            Maven
+                            Frp
                         
                     </div>
                     <div class="publish-info">
@@ -1021,8 +1123,8 @@
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" class="post-category">
-                                    构建工具
+                            <a href="/categories/%E4%BB%A3%E7%90%86/" class="post-category">
+                                    代理
                                 </a>
                             
                             
@@ -1032,8 +1134,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Maven/">
-                        <span class="chip bg-color">Maven</span>
+                    <a href="/tags/Frp/">
+                        <span class="chip bg-color">Frp</span>
                     </a>
                     
                 </div>
@@ -1047,18 +1149,18 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2024/01/24/%E9%9B%B6%E6%8B%B7%E8%B4%9D/">
+                <a href="/2024/01/24/Docker/">
                     <div class="card-image">
                         
-                        <img src="/markdownimages/background/animation/15.jpg" class="responsive-img" alt="零拷贝">
+                        <img src="/markdownimages/background/animation/11.jpg" class="responsive-img" alt="Docker">
                         
-                        <span class="card-title">零拷贝</span>
+                        <span class="card-title">Docker</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            零拷贝
+                            Docker 操作笔记
                         
                     </div>
                     <div class="publish-info">
@@ -1069,8 +1171,8 @@
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E9%9B%B6%E6%8B%B7%E8%B4%9D/" class="post-category">
-                                    零拷贝
+                            <a href="/categories/%E9%83%A8%E7%BD%B2/" class="post-category">
+                                    部署
                                 </a>
                             
                             
@@ -1080,8 +1182,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
-                        <span class="chip bg-color">操作系统</span>
+                    <a href="/tags/Docker/">
+                        <span class="chip bg-color">Docker</span>
                     </a>
                     
                 </div>
